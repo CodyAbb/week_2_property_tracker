@@ -1,7 +1,8 @@
 require('pg')
 class PropertyInfo
 
-  attr_reader :id, :address, :value, :number_of_bedrooms, :build
+  attr_reader :id
+  attr_accessor :address, :value, :number_of_bedrooms, :build
 
   def initialize( options )
     @id = options['id'].to_i() if options['id']
@@ -35,6 +36,33 @@ class PropertyInfo
     properties = db.exec_prepared("all")
     db.close()
     return properties.map { |property_hash| PropertyInfo.new(property_hash) }
+  end
+
+  def self.delete_all()
+    db = PG.connect({dbname: 'property_tracker', host: 'localhost'})
+    sql = "DELETE FROM property_tracker;"
+    db.prepare("delete_all", sql)
+    db.exec_prepared("delete_all")
+    db.close()
+  end
+
+  def update()
+    db = PG.connect({dbname: 'property_tracker', host: 'localhost'})
+    sql =
+      "
+      UPDATE property_tracker SET (
+        address,
+        value,
+        number_of_bedrooms,
+        build
+      ) = (
+        $1, $2, $3, $4
+      ) WHERE id = $5;
+      "
+    values = [@address, @value, @number_of_bedrooms, @build, @id]
+    db.prepare("update", sql)
+    db.exec_prepared("update", values)
+    db.close()
   end
 
 end

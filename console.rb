@@ -15,5 +15,9 @@ property2 = PropertyInfo.new({
   'build' => "mixed-use"
   })
 
+PropertyInfo.delete_all()
+property1.save()
+property2.save()
+
 binding.pry
 nil

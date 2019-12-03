@@ -28,4 +28,13 @@ class PropertyInfo
     db.close()
   end
 
+  def self.all()
+    db = PG.connect({dbname: 'property_tracker', host: 'localhost'})
+    sql = "SELECT * FROM property_tracker;"
+    db.prepare("all", sql)
+    properties = db.exec_prepared("all")
+    db.close()
+    return properties.map { |property_hash| PropertyInfo.new(property_hash) }
+  end
+
 end

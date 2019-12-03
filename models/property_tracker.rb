@@ -54,7 +54,7 @@ class PropertyInfo
     db.exec_prepared("delete_one", values)
     db.close()
   end
-  
+
   def update()
     db = PG.connect({dbname: 'property_tracker', host: 'localhost'})
     sql =
@@ -74,4 +74,13 @@ class PropertyInfo
     db.close()
   end
 
+  def find()
+    db = PG.connect({dbname: 'property_tracker', host: 'localhost'})
+    sql = "SELECT * FROM property_tracker WHERE id = $1"
+    value = [@id]
+    db.prepare("find", sql)
+    found_property = db.exec_prepared("find", value)[0]
+    db.close()
+    return PropertyInfo.new(found_property)
+  end
 end
